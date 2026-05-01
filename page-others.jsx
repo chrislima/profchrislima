@@ -164,13 +164,28 @@ function DisciplinaPage({ go, slug }) {
           <h1 className="disc-hero-title">{d.name}</h1>
           <p className="disc-hero-lede">{d.description}</p>
 
-          {d.folderUrl && (
-            <div style={{ marginTop: 32 }}>
+          <div style={{ marginTop: 32, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12 }}>
+            {d.folderUrl && (
               <a href={d.folderUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ textDecoration: 'none' }}>
                 <Icon.Download/> {t.discipline.openFolder}
               </a>
-            </div>
-          )}
+            )}
+            {(d.repos || []).map(repo => (
+              <a key={repo.url} href={repo.url} target="_blank" rel="noopener noreferrer"
+                 style={{
+                   display: 'inline-flex', alignItems: 'center', gap: 6,
+                   padding: '7px 12px', borderRadius: 8,
+                   border: '1px solid var(--border)', background: 'var(--surface)',
+                   textDecoration: 'none', transition: 'border-color 0.2s',
+                   color: 'var(--text-dim)',
+                 }}
+                 onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--text)'; }}
+                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-dim)'; }}>
+                <span style={{ width: 14, height: 14, display: 'flex', flexShrink: 0, color: 'var(--text-muted)' }}><Icon.Github/></span>
+                <span style={{ fontSize: 12, fontFamily: 'JetBrains Mono, ui-monospace, monospace', letterSpacing: '0.02em' }}>{repo.label}</span>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 

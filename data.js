@@ -61,6 +61,9 @@ window.SITE_DATA = {
       description: "Fundamentos de POO em Java e Python: classes, herança, polimorfismo, encapsulamento. Princípios SOLID aplicados a problemas reais. Padrões de projeto introdutórios.",
       color: "#3B82F6",
       folderUrl: "https://1drv.ms/f/c/b5ea056ce2397b48/IgBIeznibAXqIIC1tKMAAAAAAe0JnT9YwxxufnMtEXYgPMA?e=dQhYrn",
+      repos: [
+        { label: "C206_C125", url: "https://github.com/chrislima-inatel/C206_C125" },
+      ],
     },
     {
       code: "C14",
@@ -69,6 +72,10 @@ window.SITE_DATA = {
       description: "Processos de desenvolvimento, requisitos, modelagem UML, métricas de software e gestão de projetos ágeis. Trabalho em equipe com práticas de versionamento.",
       color: "#3B82F6",
       folderUrl: "https://1drv.ms/f/c/b5ea056ce2397b48/IgBIeznibAXqIIC1RaIAAAAAAUADkhDnZVQH3FWWh3bZWnE?e=WOOCRw",
+      repos: [
+        { label: "C214", url: "https://github.com/chrislima-inatel/C214" },
+        { label: "tdd-ci-devops", url: "https://github.com/chrislima-inatel/tdd-ci-devops" },
+      ],
     },
     {
       code: "S07",
@@ -77,6 +84,9 @@ window.SITE_DATA = {
       description: "Estratégias de teste (unitário, integração, e2e), CI/CD, observabilidade, infra como código. Pipelines reais com GitHub Actions, Docker e Kubernetes.",
       color: "#3B82F6",
       folderUrl: "https://1drv.ms/f/c/b5ea056ce2397b48/IgDiHe9D8QdDSqry0cJe4Qe8AcjoKgsSkBgzOkDSdMXRJak?e=sIIXI1",
+      repos: [
+        { label: "S07", url: "https://github.com/chrislima-inatel/S07" },
+      ],
     },
     {
       code: "S06",
@@ -85,6 +95,7 @@ window.SITE_DATA = {
       description: "Discovery, métricas de produto, experimentos A/B, roadmap. Da ideia à entrega, conectando engenharia, UX e negócio.",
       color: "#3B82F6",
       folderUrl: "https://1drv.ms/p/c/b5ea056ce2397b48/IQBIeznibAXqIIC1rScAAAAAAemM7nPPKuOwDL9Jt02RYW8?e=U07G9t",
+      repos: [],
     },
   ],
 
