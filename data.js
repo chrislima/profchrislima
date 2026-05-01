@@ -18,7 +18,6 @@ window.SITE_DATA = {
 
   // ---------------------------------------------------------------------------
   // LINKS — your social / academic profiles
-  // EDIT: replace each url and handle with your real values.
   // ---------------------------------------------------------------------------
   links: {
     github: {
@@ -27,7 +26,6 @@ window.SITE_DATA = {
     },
     lattes: {
       handle: "lattes.cnpq.br/XXXXXXXXXXXXXXXX",
-      // EDIT: e.g. url: "http://lattes.cnpq.br/1234567890123456"
       url: "#",
     },
     linkedin: {
@@ -50,8 +48,8 @@ window.SITE_DATA = {
 
   // ---------------------------------------------------------------------------
   // DISCIPLINES — your courses
-  // Each discipline needs a unique `code` (filter key) and `slug` (routing).
-  // folderUrl: OneDrive shared folder link for this discipline's materials.
+  // contentUrl: link to the interactive lesson content (OneDrive HTML, etc.)
+  //             Leave null to show a "coming soon" placeholder.
   // ---------------------------------------------------------------------------
   disciplines: [
     {
@@ -61,6 +59,7 @@ window.SITE_DATA = {
       description: "Fundamentos de POO em Java e Python: classes, herança, polimorfismo, encapsulamento. Princípios SOLID aplicados a problemas reais. Padrões de projeto introdutórios.",
       color: "#3B82F6",
       folderUrl: "https://1drv.ms/f/c/b5ea056ce2397b48/IgBIeznibAXqIIC1tKMAAAAAAe0JnT9YwxxufnMtEXYgPMA?e=dQhYrn",
+      contentUrl: null,
       repos: [
         { label: "C206_C125", url: "https://github.com/chrislima-inatel/C206_C125" },
       ],
@@ -72,6 +71,7 @@ window.SITE_DATA = {
       description: "Processos de desenvolvimento, requisitos, modelagem UML, métricas de software e gestão de projetos ágeis. Trabalho em equipe com práticas de versionamento.",
       color: "#3B82F6",
       folderUrl: "https://1drv.ms/f/c/b5ea056ce2397b48/IgBIeznibAXqIIC1RaIAAAAAAUADkhDnZVQH3FWWh3bZWnE?e=WOOCRw",
+      contentUrl: "https://1drv.ms/u/c/b5ea056ce2397b48/IQCHi1tkC2hjQqr9IBtFh5p5AXuSpSKjY8sGIt4UxBeirdo?e=2sQx4E",
       repos: [
         { label: "C214", url: "https://github.com/chrislima-inatel/C214" },
         { label: "tdd-ci-devops", url: "https://github.com/chrislima-inatel/tdd-ci-devops" },
@@ -84,6 +84,7 @@ window.SITE_DATA = {
       description: "Estratégias de teste (unitário, integração, e2e), CI/CD, observabilidade, infra como código. Pipelines reais com GitHub Actions, Docker e Kubernetes.",
       color: "#3B82F6",
       folderUrl: "https://1drv.ms/f/c/b5ea056ce2397b48/IgDiHe9D8QdDSqry0cJe4Qe8AcjoKgsSkBgzOkDSdMXRJak?e=sIIXI1",
+      contentUrl: null,
       repos: [
         { label: "S07", url: "https://github.com/chrislima-inatel/S07" },
       ],
@@ -95,21 +96,19 @@ window.SITE_DATA = {
       description: "Discovery, métricas de produto, experimentos A/B, roadmap. Da ideia à entrega, conectando engenharia, UX e negócio.",
       color: "#3B82F6",
       folderUrl: "https://1drv.ms/p/c/b5ea056ce2397b48/IQBIeznibAXqIIC1rScAAAAAAemM7nPPKuOwDL9Jt02RYW8?e=U07G9t",
+      contentUrl: null,
       repos: [],
     },
   ],
 
   // ---------------------------------------------------------------------------
-  // MATERIALS — catalog of PDFs, slides, and repos.
-  // Add items here to list individual files; leave empty to show only the
-  // OneDrive folder button on each discipline page.
-  // Example: { id: 1, title: "Slides Aula 01", type: "slides", discipline: "C06", semester: "2026/1", date: "2026-02-12", pages: 32, tags: ["java"], url: "link-direto" }
+  // MATERIALS — leave empty; materials are accessed via each discipline's
+  // OneDrive folder link and contentUrl.
   // ---------------------------------------------------------------------------
   materials: [],
 
   // ---------------------------------------------------------------------------
-  // PUBLICATIONS — peer-reviewed papers
-  // doi: string WITHOUT "https://doi.org/" — links are auto-generated.
+  // PUBLICATIONS
   // ---------------------------------------------------------------------------
   publications: [
     {
@@ -131,20 +130,13 @@ window.SITE_DATA = {
   ],
 
   // ---------------------------------------------------------------------------
-  // TCC — folder with final graduation works supervised
+  // TCC
   // ---------------------------------------------------------------------------
   tccFolder: {
     url: "https://onedrive.live.com/?id=B5EA056CE2397B48%2145866&cid=b5ea056ce2397b48&redeem=aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBa2g3T2VKc0JlcTFndVlxczhtMlBpT2ZMd0pTR1E_ZT04aThkU0U",
     label: "TCC orientados — acervo completo",
   },
 
-  // ---------------------------------------------------------------------------
-  // PROJECTS — ongoing research (optional, edit or clear the array)
-  // ---------------------------------------------------------------------------
   projects: [],
-
-  // ---------------------------------------------------------------------------
-  // ADVISEES — students supervised (optional, edit or clear the array)
-  // ---------------------------------------------------------------------------
   advisees: [],
 };

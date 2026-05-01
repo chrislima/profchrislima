@@ -1,6 +1,100 @@
 // Main app — router + floating nav + tweaks integration
 const { useState: uS, useEffect: uE, useMemo: uM } = React;
 
+function useMobile() {
+  const [mobile, setMobile] = uS(window.innerWidth < 680);
+  uE(() => {
+    const handler = () => setMobile(window.innerWidth < 680);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return mobile;
+}
+
+function MobileNav({ page, go, tweaks, setTweak }) {
+  const [t] = window.useT();
+  const [open, setOpen] = uS(false);
+  const D = window.SITE_DATA;
+  const ref = React.useRef(null);
+
+  uE(() => {
+    if (!open) return;
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  return (
+    <div ref={ref} style={{ position: 'fixed', top: 12, left: 12, right: 12, zIndex: 50 }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '8px 10px 8px 16px',
+        borderRadius: 14,
+        background: 'color-mix(in srgb, var(--bg) 85%, transparent)',
+        backdropFilter: 'blur(16px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+        border: '1px solid var(--border)',
+      }}>
+        <span onClick={() => { go('home'); setOpen(false); }}
+          style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--text)', cursor: 'default' }}>
+          {D.professor.name.split(' ')[0]} <span style={{ color: 'var(--accent)', fontStyle: 'italic' }}>Lima</span>
+        </span>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          <button className="theme-toggle" onClick={() => setTweak('lang', tweaks.lang === 'pt' ? 'en' : 'pt')}
+            style={{ fontSize: 10, fontWeight: 700, fontFamily: 'JetBrains Mono, ui-monospace, monospace', letterSpacing: '0.05em' }}>
+            {tweaks.lang === 'pt' ? 'PT' : 'EN'}
+          </button>
+          <button className="theme-toggle" onClick={() => setTweak('dark', !tweaks.dark)} title={tweaks.dark ? t.nav.themeLight : t.nav.themeDark}>
+            {tweaks.dark ? <Icon.Sun/> : <Icon.Moon/>}
+          </button>
+          <button className="theme-toggle" onClick={() => setOpen(o => !o)}
+            style={{ fontSize: 16, lineHeight: 1 }}>
+            {open ? '✕' : '☰'}
+          </button>
+        </div>
+      </div>
+
+      {open && (
+        <div style={{
+          marginTop: 6, padding: 8, borderRadius: 14,
+          background: 'var(--bg-elev)',
+          border: '1px solid var(--border)',
+          boxShadow: '0 16px 48px rgba(0,0,0,0.35)',
+          display: 'flex', flexDirection: 'column', gap: 2,
+        }}>
+          <a className={"nav-link " + (page.name === 'home' ? 'active' : '')}
+             style={{ display: 'block' }}
+             onClick={() => { go('home'); setOpen(false); }}>
+            {t.nav.home}
+          </a>
+          <div style={{ padding: '6px 12px 2px', fontSize: 10, fontFamily: 'JetBrains Mono, ui-monospace, monospace', letterSpacing: '0.12em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+            {t.nav.disciplines}
+          </div>
+          {D.disciplines.map(d => (
+            <a key={d.code}
+               className={"nav-link " + (page.name === 'disciplina' && page.arg === d.slug ? 'active' : '')}
+               style={{ display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 24 }}
+               onClick={() => { go('disciplina', d.slug); setOpen(false); }}>
+              <span style={{ fontFamily: 'JetBrains Mono, ui-monospace, monospace', fontSize: 10, color: 'var(--accent)', letterSpacing: '0.06em', flexShrink: 0 }}>{d.code}</span>
+              <span style={{ fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.name}</span>
+            </a>
+          ))}
+          <a className={"nav-link " + (page.name === 'publicacoes' ? 'active' : '')}
+             style={{ display: 'block' }}
+             onClick={() => { go('publicacoes'); setOpen(false); }}>
+            {t.nav.research}
+          </a>
+          <a className={"nav-link " + (page.name === 'redes' ? 'active' : '')}
+             style={{ display: 'block' }}
+             onClick={() => { go('redes'); setOpen(false); }}>
+            {t.nav.networks}
+          </a>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "direction": "editorial",
   "accent": "#3B82F6",
@@ -69,6 +163,7 @@ function DisciplinasMenu({ page, go }) {
 function App() {
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const [page, setPage] = uS({ name: 'home', arg: null });
+  const isMobile = useMobile();
 
   // Language
   uE(() => {
@@ -114,32 +209,34 @@ function App() {
     <div className="app">
       <div className="bg-decor"></div>
 
-      {/* Floating pill nav */}
-      <div style={{
-        position: 'fixed', top: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 50,
-        display: 'flex', gap: 8, alignItems: 'center',
-        padding: 6, borderRadius: 14,
-        background: 'color-mix(in srgb, var(--bg) 70%, transparent)',
-        backdropFilter: 'blur(16px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(16px) saturate(180%)',
-        border: '1px solid var(--border)'
-      }}>
-        <a className={"nav-link " + (page.name === 'home' ? 'active' : '')} onClick={() => go('home')}>{t.nav.home}</a>
-        <DisciplinasMenu page={page} go={go}/>
-        <a className={"nav-link " + (page.name === 'materiais' ? 'active' : '')} onClick={() => go('materiais')}>{t.nav.materials}</a>
-        <a className={"nav-link " + (page.name === 'publicacoes' ? 'active' : '')} onClick={() => go('publicacoes')}>{t.nav.research}</a>
-        <a className={"nav-link " + (page.name === 'redes' ? 'active' : '')} onClick={() => go('redes')}>{t.nav.networks}</a>
-        <button className="theme-toggle" onClick={() => setTweak('lang', tweaks.lang === 'pt' ? 'en' : 'pt')} title="Idioma / Language" style={{ fontSize: 11, fontWeight: 600, fontFamily: 'JetBrains Mono, ui-monospace, monospace', letterSpacing: '0.05em' }}>
-          {tweaks.lang === 'pt' ? 'PT' : 'EN'}
-        </button>
-        <button className="theme-toggle" onClick={() => setTweak('dark', !tweaks.dark)} title={tweaks.dark ? t.nav.themeLight : t.nav.themeDark}>
-          {tweaks.dark ? <Icon.Sun/> : <Icon.Moon/>}
-        </button>
-      </div>
+      {/* Nav — pill (desktop) or hamburger (mobile) */}
+      {isMobile ? (
+        <MobileNav page={page} go={go} tweaks={tweaks} setTweak={setTweak}/>
+      ) : (
+        <div style={{
+          position: 'fixed', top: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 50,
+          display: 'flex', gap: 8, alignItems: 'center',
+          padding: 6, borderRadius: 14,
+          background: 'color-mix(in srgb, var(--bg) 70%, transparent)',
+          backdropFilter: 'blur(16px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+          border: '1px solid var(--border)'
+        }}>
+          <a className={"nav-link " + (page.name === 'home' ? 'active' : '')} onClick={() => go('home')}>{t.nav.home}</a>
+          <DisciplinasMenu page={page} go={go}/>
+          <a className={"nav-link " + (page.name === 'publicacoes' ? 'active' : '')} onClick={() => go('publicacoes')}>{t.nav.research}</a>
+          <a className={"nav-link " + (page.name === 'redes' ? 'active' : '')} onClick={() => go('redes')}>{t.nav.networks}</a>
+          <button className="theme-toggle" onClick={() => setTweak('lang', tweaks.lang === 'pt' ? 'en' : 'pt')} title="Idioma / Language" style={{ fontSize: 11, fontWeight: 600, fontFamily: 'JetBrains Mono, ui-monospace, monospace', letterSpacing: '0.05em' }}>
+            {tweaks.lang === 'pt' ? 'PT' : 'EN'}
+          </button>
+          <button className="theme-toggle" onClick={() => setTweak('dark', !tweaks.dark)} title={tweaks.dark ? t.nav.themeLight : t.nav.themeDark}>
+            {tweaks.dark ? <Icon.Sun/> : <Icon.Moon/>}
+          </button>
+        </div>
+      )}
 
       <main key={page.name + (page.arg || '')}>
         {page.name === 'home' && <HomePage go={go}/>}
-        {page.name === 'materiais' && <MateriaisPage go={go} initialDiscipline={page.arg || 'todos'}/>}
         {page.name === 'disciplina' && <DisciplinaPage go={go} slug={page.arg}/>}
         {page.name === 'publicacoes' && <PublicacoesPage/>}
         {page.name === 'redes' && <RedesPage/>}

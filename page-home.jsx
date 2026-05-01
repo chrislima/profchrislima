@@ -42,18 +42,25 @@ function HomePage({ go }) {
   const D = window.SITE_DATA;
   const [t] = window.useT();
 
-  const counts = [
-    `${D.disciplines.length} ${t.home.hubs[0].metaSuffix}`,
-    D.materials.length > 0 ? `${D.materials.length} ${t.home.hubs[1].metaSuffix}` : null,
-    `${D.publications.length} ${t.home.hubs[2].metaSuffix}`,
-    t.home.hubs[3].meta,
-  ];
-
   const hubItems = [
-    { key: 'disciplinas', onClick: () => go('disciplina', D.disciplines[0].slug) },
-    { key: 'conteudo', onClick: () => go('materiais') },
-    { key: 'artigos', onClick: () => go('publicacoes') },
-    { key: 'redes', onClick: () => go('redes') },
+    {
+      key: 'disciplinas',
+      tx: t.home.hubs[0],
+      count: `${D.disciplines.length} ${t.home.hubs[0].metaSuffix}`,
+      onClick: () => go('disciplina', D.disciplines[0].slug),
+    },
+    {
+      key: 'artigos',
+      tx: t.home.hubs[2],
+      count: `${D.publications.length} ${t.home.hubs[2].metaSuffix}`,
+      onClick: () => go('publicacoes'),
+    },
+    {
+      key: 'redes',
+      tx: t.home.hubs[3],
+      count: t.home.hubs[3].meta,
+      onClick: () => go('redes'),
+    },
   ];
 
   return (
@@ -64,21 +71,16 @@ function HomePage({ go }) {
           <div className="hub-affil">{t.home.affil}</div>
         </div>
 
-        <div className="hub-grid">
-          {hubItems.map((it, i) => {
-            const tx = t.home.hubs[i];
-            return (
-              <a key={it.key} className="hub-card" onClick={it.onClick} style={{ animationDelay: `${i * 80}ms` }}>
-                <div className="hub-card-kicker">{tx.kicker}</div>
-                <div className="hub-card-label">
-                  {tx.label}
-                  <span className="hub-card-arrow"><Icon.Arrow/></span>
-                </div>
-                <div className="hub-card-desc">{tx.desc}</div>
-                {counts[i] && <div className="hub-card-meta">{counts[i]}</div>}
-              </a>
-            );
-          })}
+        <div className="hub-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', background: 'var(--border-strong)', border: '1px solid var(--border-strong)' }}>
+          {hubItems.map((it, i) => (
+            <a key={it.key} className="hub-card" onClick={it.onClick} style={{ animationDelay: `${i * 80}ms` }}>
+              <div className="hub-card-label">
+                {it.tx.label}
+                <span className="hub-card-arrow"><Icon.Arrow/></span>
+              </div>
+              <div className="hub-card-desc">{it.tx.desc}</div>
+            </a>
+          ))}
         </div>
 
         <div className="hub-foot">

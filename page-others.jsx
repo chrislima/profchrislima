@@ -137,12 +137,64 @@ function MateriaisPage({ go, initialDiscipline }) {
   );
 }
 
+// ───────── Content Viewer ─────────
+function ContentViewer({ d }) {
+  if (!d.contentUrl) {
+    return (
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        padding: '72px 24px',
+        border: '1px dashed var(--border-strong)',
+        borderRadius: 'var(--radius-lg)',
+        gap: 18, textAlign: 'center',
+      }}>
+        <div style={{ width: 52, height: 52, display: 'grid', placeItems: 'center', background: 'var(--surface)', borderRadius: 14, color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
+          <Icon.File/>
+        </div>
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--text-dim)', marginBottom: 8 }}>Conteúdo em breve</div>
+          <div style={{ fontSize: 13.5, color: 'var(--text-muted)', maxWidth: '36ch', lineHeight: 1.55 }}>
+            O material interativo desta disciplina será disponibilizado em breve.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{
+        borderRadius: 'var(--radius-lg)',
+        border: '1px solid var(--border)',
+        overflow: 'hidden',
+        background: 'var(--bg-elev)',
+        lineHeight: 0,
+      }}>
+        <iframe
+          src={d.contentUrl}
+          style={{ width: '100%', height: 'clamp(520px, 72vh, 860px)', border: 'none', display: 'block' }}
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads"
+          title={"Conteúdo — " + d.name}
+          allowFullScreen
+        />
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <a href={d.contentUrl} target="_blank" rel="noopener noreferrer"
+           style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-muted)', fontFamily: 'JetBrains Mono, ui-monospace, monospace', transition: 'color 0.2s' }}
+           onMouseEnter={e => e.currentTarget.style.color = 'var(--text)'}
+           onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}>
+          <Icon.External/> Abrir em nova aba
+        </a>
+      </div>
+    </div>
+  );
+}
+
 // ───────── Disciplina ─────────
 function DisciplinaPage({ go, slug }) {
   const D = window.SITE_DATA;
   const [t, lang] = window.useT();
   const d = D.disciplines.find(x => x.slug === slug) || D.disciplines[0];
-  const mats = D.materials.filter(m => m.discipline === d.code);
 
   const [comments, setComments] = useS2(t.discipline.seedComments);
   useE2(() => { setComments(t.discipline.seedComments); }, [lang]);
@@ -191,58 +243,13 @@ function DisciplinaPage({ go, slug }) {
 
       <section className="section">
         <div className="container">
-          <div className="section-head">
+          <div className="section-head" style={{ marginBottom: 32 }}>
             <div className="section-head-left">
               <span className="kicker">{t.discipline.kickerMaterials}</span>
               <h2 className="section-title" style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}>{t.discipline.titleMaterials}</h2>
             </div>
-            <button className="btn" onClick={() => go('materiais', d.code)}>{t.discipline.seeLibrary} <Icon.Arrow/></button>
           </div>
-
-          {mats.length > 0 ? (
-            <div className="material-list">
-              {mats.map(m => {
-                const href = m.url ? "https://" + m.url : (d.folderUrl || null);
-                return (
-                  <div key={m.id} className="material-row">
-                    <div className={"material-icon t-" + m.type}>
-                      {m.type === 'apostila' ? 'PDF' : m.type === 'slides' ? 'PPT' : 'GIT'}
-                    </div>
-                    <div className="material-meta">
-                      {href
-                        ? <a href={href} target="_blank" rel="noopener noreferrer" className="material-title" style={{ textDecoration: 'none' }}>{m.title}</a>
-                        : <h3 className="material-title">{m.title}</h3>
-                      }
-                      <div className="material-tags">
-                        {(m.tags || []).slice(0, 3).map(tg => <span key={tg} className="material-tag">#{tg}</span>)}
-                      </div>
-                    </div>
-                    <div className="material-disc">{m.semester}</div>
-                    <div className="material-date">{m.date}</div>
-                    <div className="material-size">{m.pages ? `${m.pages} ${t.materials.pages}` : "—"}</div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : d.folderUrl ? (
-            <a href={d.folderUrl} target="_blank" rel="noopener noreferrer"
-               style={{
-                 display: 'flex', alignItems: 'center', gap: 16,
-                 padding: '24px 28px', borderRadius: 'var(--radius-lg)',
-                 border: '1px solid var(--border)', background: 'var(--surface)',
-                 textDecoration: 'none', transition: 'border-color 0.2s',
-               }}
-               onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--accent)'}
-               onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
-              <div style={{ width: 44, height: 44, display: 'grid', placeItems: 'center', background: 'var(--accent-soft)', color: 'var(--accent)', borderRadius: 10, flexShrink: 0 }}>
-                <Icon.Download/>
-              </div>
-              <div>
-                <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)' }}>{t.discipline.openFolder}</div>
-                <div style={{ fontSize: 12.5, color: 'var(--text-muted)', fontFamily: 'JetBrains Mono, ui-monospace, monospace', marginTop: 3 }}>OneDrive</div>
-              </div>
-            </a>
-          ) : null}
+          <ContentViewer d={d}/>
         </div>
       </section>
 
