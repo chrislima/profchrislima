@@ -88,9 +88,11 @@ function MateriaisPage({ go, initialDiscipline }) {
             </div>
           )}
 
-          <div style={{ fontSize: 12.5, color: 'var(--text-muted)', fontFamily: 'JetBrains Mono, ui-monospace, monospace', marginBottom: 8, letterSpacing: '0.05em' }}>
-            {filtered.length} {filtered.length === 1 ? t.materials.countOne : t.materials.countMany}
-          </div>
+          {filtered.length > 0 && (
+            <div style={{ fontSize: 12.5, color: 'var(--text-muted)', fontFamily: 'JetBrains Mono, ui-monospace, monospace', marginBottom: 8, letterSpacing: '0.05em' }}>
+              {filtered.length} {filtered.length === 1 ? t.materials.countOne : t.materials.countMany}
+            </div>
+          )}
 
           <div className="material-list">
             {filtered.map(m => {
@@ -182,30 +184,50 @@ function DisciplinaPage({ go, slug }) {
             <button className="btn" onClick={() => go('materiais', d.code)}>{t.discipline.seeLibrary} <Icon.Arrow/></button>
           </div>
 
-          <div className="material-list">
-            {mats.map(m => {
-              const href = m.url ? "https://" + m.url : (d.folderUrl || null);
-              return (
-                <div key={m.id} className="material-row">
-                  <div className={"material-icon t-" + m.type}>
-                    {m.type === 'apostila' ? 'PDF' : m.type === 'slides' ? 'PPT' : 'GIT'}
-                  </div>
-                  <div className="material-meta">
-                    {href
-                      ? <a href={href} target="_blank" rel="noopener noreferrer" className="material-title" style={{ textDecoration: 'none' }}>{m.title}</a>
-                      : <h3 className="material-title">{m.title}</h3>
-                    }
-                    <div className="material-tags">
-                      {(m.tags || []).slice(0, 3).map(tg => <span key={tg} className="material-tag">#{tg}</span>)}
+          {mats.length > 0 ? (
+            <div className="material-list">
+              {mats.map(m => {
+                const href = m.url ? "https://" + m.url : (d.folderUrl || null);
+                return (
+                  <div key={m.id} className="material-row">
+                    <div className={"material-icon t-" + m.type}>
+                      {m.type === 'apostila' ? 'PDF' : m.type === 'slides' ? 'PPT' : 'GIT'}
                     </div>
+                    <div className="material-meta">
+                      {href
+                        ? <a href={href} target="_blank" rel="noopener noreferrer" className="material-title" style={{ textDecoration: 'none' }}>{m.title}</a>
+                        : <h3 className="material-title">{m.title}</h3>
+                      }
+                      <div className="material-tags">
+                        {(m.tags || []).slice(0, 3).map(tg => <span key={tg} className="material-tag">#{tg}</span>)}
+                      </div>
+                    </div>
+                    <div className="material-disc">{m.semester}</div>
+                    <div className="material-date">{m.date}</div>
+                    <div className="material-size">{m.pages ? `${m.pages} ${t.materials.pages}` : "—"}</div>
                   </div>
-                  <div className="material-disc">{m.semester}</div>
-                  <div className="material-date">{m.date}</div>
-                  <div className="material-size">{m.pages ? `${m.pages} ${t.materials.pages}` : "—"}</div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          ) : d.folderUrl ? (
+            <a href={d.folderUrl} target="_blank" rel="noopener noreferrer"
+               style={{
+                 display: 'flex', alignItems: 'center', gap: 16,
+                 padding: '24px 28px', borderRadius: 'var(--radius-lg)',
+                 border: '1px solid var(--border)', background: 'var(--surface)',
+                 textDecoration: 'none', transition: 'border-color 0.2s',
+               }}
+               onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--accent)'}
+               onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
+              <div style={{ width: 44, height: 44, display: 'grid', placeItems: 'center', background: 'var(--accent-soft)', color: 'var(--accent)', borderRadius: 10, flexShrink: 0 }}>
+                <Icon.Download/>
+              </div>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)' }}>{t.discipline.openFolder}</div>
+                <div style={{ fontSize: 12.5, color: 'var(--text-muted)', fontFamily: 'JetBrains Mono, ui-monospace, monospace', marginTop: 3 }}>OneDrive</div>
+              </div>
+            </a>
+          ) : null}
         </div>
       </section>
 
@@ -405,35 +427,77 @@ function RedesPage() {
   const [t] = window.useT();
   const links = [
     { name: "GitHub", handle: D.links.github.handle, url: D.links.github.url, icon: <Icon.Github/> },
-    { name: "Currículo Lattes", handle: D.links.lattes.handle, url: D.links.lattes.url, icon: <Icon.File/> },
-    { name: "LinkedIn", handle: D.links.linkedin.handle, url: D.links.linkedin.url, icon: <Icon.External/> },
+    { name: "LinkedIn", handle: D.links.linkedin.handle, url: D.links.linkedin.url, icon: <Icon.LinkedIn/> },
+    { name: "Currículo Lattes", handle: D.links.lattes.handle, url: D.links.lattes.url, icon: <Icon.Lattes/> },
     { name: "Email", handle: D.professor.email, url: "mailto:" + D.professor.email, icon: <Icon.Mail/> },
   ];
   return (
-    <section className="hero" style={{ paddingBottom: 80 }}>
-      <div className="container">
-        <span className="kicker" style={{ marginBottom: 24, display: 'inline-flex' }}>{t.redes.kicker}</span>
-        <h1 className="hero-title" style={{ fontSize: 'clamp(48px, 7vw, 100px)' }}>
-          {t.redes.titleA} <span className="accent">{t.redes.titleB}</span>
-        </h1>
-        <p className="hero-lede">{t.redes.lede}</p>
-        <div style={{ marginTop: 48, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 1, background: 'var(--border)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
-          {links.map(l => (
-            <a key={l.name} href={l.url} target={l.url.startsWith('mailto:') ? '_self' : '_blank'} rel="noopener noreferrer"
-               style={{ background: 'var(--bg)', padding: 28, display: 'flex', alignItems: 'center', gap: 16, transition: 'background 0.25s' }}
-               onMouseEnter={e => e.currentTarget.style.background = 'var(--surface)'}
-               onMouseLeave={e => e.currentTarget.style.background = 'var(--bg)'}>
-              <div style={{ width: 40, height: 40, display: 'grid', placeItems: 'center', background: 'var(--accent-soft)', color: 'var(--accent)', borderRadius: 10 }}>{l.icon}</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 15, fontWeight: 500 }}>{l.name}</div>
-                <div style={{ fontSize: 12.5, color: 'var(--text-muted)', fontFamily: 'JetBrains Mono, ui-monospace, monospace', marginTop: 2 }}>{l.handle}</div>
-              </div>
-              <Icon.External/>
-            </a>
-          ))}
+    <>
+      <section className="hero" style={{ paddingBottom: 40 }}>
+        <div className="container">
+          <span className="kicker" style={{ marginBottom: 24, display: 'inline-flex' }}>{t.redes.kicker}</span>
+          <h1 className="hero-title" style={{ fontSize: 'clamp(48px, 7vw, 100px)' }}>
+            {t.redes.titleA} <span className="accent">{t.redes.titleB}</span>
+          </h1>
+          <p className="hero-lede">{t.redes.lede}</p>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 1, background: 'var(--border)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
+            {links.map(l => (
+              <a key={l.name} href={l.url} target={l.url.startsWith('mailto:') ? '_self' : '_blank'} rel="noopener noreferrer"
+                 style={{ background: 'var(--bg)', padding: 28, display: 'flex', alignItems: 'center', gap: 16, transition: 'background 0.25s', textDecoration: 'none' }}
+                 onMouseEnter={e => e.currentTarget.style.background = 'var(--surface)'}
+                 onMouseLeave={e => e.currentTarget.style.background = 'var(--bg)'}>
+                <div style={{ width: 40, height: 40, display: 'grid', placeItems: 'center', background: 'var(--accent-soft)', color: 'var(--accent)', borderRadius: 10, flexShrink: 0 }}>{l.icon}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)' }}>{l.name}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)', fontFamily: 'JetBrains Mono, ui-monospace, monospace', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.handle}</div>
+                </div>
+                <span style={{ width: 16, height: 16, display: 'flex', flexShrink: 0, color: 'var(--text-muted)', opacity: 0.5 }}><Icon.External/></span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {D.apps && D.apps.length > 0 && (
+        <section className="section" style={{ paddingTop: 0 }}>
+          <div className="container">
+            <div className="section-head" style={{ marginBottom: 24 }}>
+              <div className="section-head-left">
+                <span className="kicker">{t.redes.appsKicker}</span>
+                <h2 className="section-title" style={{ fontSize: 'clamp(28px, 4vw, 42px)' }}>{t.redes.appsTitle}</h2>
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 1, background: 'var(--border)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
+              {D.apps.map(app => (
+                <a key={app.name} href={app.url} target="_blank" rel="noopener noreferrer"
+                   style={{ background: 'var(--bg)', padding: 28, display: 'flex', flexDirection: 'column', gap: 12, transition: 'background 0.25s', textDecoration: 'none' }}
+                   onMouseEnter={e => e.currentTarget.style.background = 'var(--surface)'}
+                   onMouseLeave={e => e.currentTarget.style.background = 'var(--bg)'}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ width: 40, height: 40, display: 'grid', placeItems: 'center', background: 'var(--accent-soft)', color: 'var(--accent)', borderRadius: 10, flexShrink: 0 }}>
+                      <Icon.Globe/>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>{app.name}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'JetBrains Mono, ui-monospace, monospace', marginTop: 2 }}>{app.url.replace(/^https?:\/\//, '')}</div>
+                    </div>
+                    {app.status === 'beta' && (
+                      <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', padding: '3px 8px', borderRadius: 6, background: 'rgba(245,158,11,0.15)', color: '#F59E0B', border: '1px solid rgba(245,158,11,0.3)', fontFamily: 'JetBrains Mono, ui-monospace, monospace', flexShrink: 0 }}>EM DESENVOLVIMENTO</span>
+                    )}
+                  </div>
+                  <p style={{ fontSize: 13.5, color: 'var(--text-dim)', margin: 0, lineHeight: 1.55 }}>{app.description}</p>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+    </>
   );
 }
 

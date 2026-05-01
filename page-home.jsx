@@ -44,7 +44,7 @@ function HomePage({ go }) {
 
   const counts = [
     `${D.disciplines.length} ${t.home.hubs[0].metaSuffix}`,
-    `${D.materials.length} ${t.home.hubs[1].metaSuffix}`,
+    D.materials.length > 0 ? `${D.materials.length} ${t.home.hubs[1].metaSuffix}` : null,
     `${D.publications.length} ${t.home.hubs[2].metaSuffix}`,
     t.home.hubs[3].meta,
   ];
@@ -75,7 +75,7 @@ function HomePage({ go }) {
                   <span className="hub-card-arrow"><Icon.Arrow/></span>
                 </div>
                 <div className="hub-card-desc">{tx.desc}</div>
-                <div className="hub-card-meta">{counts[i]}</div>
+                {counts[i] && <div className="hub-card-meta">{counts[i]}</div>}
               </a>
             );
           })}

@@ -64,6 +64,8 @@ window.I18N = {
       kicker: "04 — Apps & Redes",
       titleA: "Onde me", titleB: "encontrar.",
       lede: "GitHub, Lattes, LinkedIn e email. Onde encontrar meu trabalho e entrar em contato.",
+      appsKicker: "Projetos pessoais",
+      appsTitle: "Apps que desenvolvi",
     },
     tweaks: {
       direction: "Direção visual", style: "Estilo",
@@ -137,6 +139,8 @@ window.I18N = {
       kicker: "04 — Apps & Networks",
       titleA: "Where to", titleB: "find me.",
       lede: "GitHub, Lattes, LinkedIn and email. Where to find my work and get in touch.",
+      appsKicker: "Personal projects",
+      appsTitle: "Apps I built",
     },
     tweaks: {
       direction: "Visual direction", style: "Style",

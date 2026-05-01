@@ -32,10 +32,21 @@ window.SITE_DATA = {
     },
     linkedin: {
       handle: "in/christopher-lima-13050597",
-      // EDIT: e.g. url: "https://www.linkedin.com/in/christopher-lima-13050597/"
-      url: "#",
+      url: "https://www.linkedin.com/in/christopher-lima-13050597/",
     },
   },
+
+  // ---------------------------------------------------------------------------
+  // APPS — personal projects / tools available online
+  // ---------------------------------------------------------------------------
+  apps: [
+    {
+      name: "Budgetool",
+      description: "App pessoal de controle de finanças. Em desenvolvimento — mas já disponível para todos.",
+      url: "http://budgetoolapp.netlify.app",
+      status: "beta",
+    },
+  ],
 
   // ---------------------------------------------------------------------------
   // DISCIPLINES — your courses
@@ -79,36 +90,11 @@ window.SITE_DATA = {
 
   // ---------------------------------------------------------------------------
   // MATERIALS — catalog of PDFs, slides, and repos.
-  // Each item links to the discipline's OneDrive folder (folderUrl above).
-  // To link individual files, add: url: "https://direct-link-to-file"
+  // Add items here to list individual files; leave empty to show only the
+  // OneDrive folder button on each discipline page.
+  // Example: { id: 1, title: "Slides Aula 01", type: "slides", discipline: "C06", semester: "2026/1", date: "2026-02-12", pages: 32, tags: ["java"], url: "link-direto" }
   // ---------------------------------------------------------------------------
-  materials: [
-    // C06 — POO
-    { id: 1, title: "Apostila Completa — POO em Java", type: "apostila", discipline: "C06", semester: "2026/1", date: "2026-02-10", pages: 184, tags: ["java", "fundamentos"], featured: true },
-    { id: 2, title: "Slides — Aula 01: Classes e Objetos", type: "slides", discipline: "C06", semester: "2026/1", date: "2026-02-12", pages: 32, tags: ["java", "introdução"] },
-    { id: 3, title: "Slides — Aula 04: Herança e Polimorfismo", type: "slides", discipline: "C06", semester: "2026/1", date: "2026-03-05", pages: 41, tags: ["java", "herança"] },
-    { id: 4, title: "Repositório — Exemplos SOLID", type: "codigo", discipline: "C06", semester: "2026/1", date: "2026-03-18", tags: ["java", "solid"], url: "github.com/chrislima/solid-exemplos" },
-    { id: 5, title: "Slides — Padrões GoF Essenciais", type: "slides", discipline: "C06", semester: "2026/1", date: "2026-04-02", pages: 48, tags: ["padrões", "design"] },
-
-    // C14 — Engenharia de Software
-    { id: 6, title: "Apostila — Engenharia de Software Moderna", type: "apostila", discipline: "C14", semester: "2026/1", date: "2026-02-08", pages: 247, tags: ["processos", "agile"], featured: true },
-    { id: 7, title: "Slides — Métodos Ágeis: Scrum, Kanban, XP", type: "slides", discipline: "C14", semester: "2026/1", date: "2026-02-22", pages: 56, tags: ["scrum", "ágil"] },
-    { id: 8, title: "Slides — Engenharia de Requisitos", type: "slides", discipline: "C14", semester: "2026/1", date: "2026-03-10", pages: 44, tags: ["requisitos"] },
-    { id: 9, title: "Slides — UML na Prática", type: "slides", discipline: "C14", semester: "2026/1", date: "2026-03-28", pages: 52, tags: ["uml", "modelagem"] },
-    { id: 10, title: "Repositório — Projeto Modelo", type: "codigo", discipline: "C14", semester: "2026/1", date: "2026-04-15", tags: ["template"], url: "github.com/chrislima/es-projeto-modelo" },
-
-    // S07 — Qualidade e DevOps
-    { id: 11, title: "Apostila — Qualidade & DevOps", type: "apostila", discipline: "S07", semester: "2026/1", date: "2026-02-15", pages: 218, tags: ["devops", "testes"], featured: true },
-    { id: 12, title: "Slides — Pirâmide de Testes", type: "slides", discipline: "S07", semester: "2026/1", date: "2026-02-28", pages: 38, tags: ["testes", "qualidade"] },
-    { id: 13, title: "Slides — CI/CD com GitHub Actions", type: "slides", discipline: "S07", semester: "2026/1", date: "2026-03-15", pages: 47, tags: ["ci", "github-actions"] },
-    { id: 14, title: "Repositório — Pipeline Demo (Docker + K8s)", type: "codigo", discipline: "S07", semester: "2026/1", date: "2026-03-30", tags: ["docker", "kubernetes"], url: "github.com/chrislima/cicd-demo" },
-    { id: 15, title: "Slides — Observabilidade & SRE", type: "slides", discipline: "S07", semester: "2026/1", date: "2026-04-12", pages: 43, tags: ["observabilidade", "sre"] },
-
-    // S06 — Engenharia de Produto
-    { id: 16, title: "Apostila — Engenharia de Produto", type: "apostila", discipline: "S06", semester: "2026/1", date: "2026-02-18", pages: 162, tags: ["produto", "discovery"] },
-    { id: 17, title: "Slides — Discovery & Métricas", type: "slides", discipline: "S06", semester: "2026/1", date: "2026-03-04", pages: 39, tags: ["discovery", "métricas"] },
-    { id: 18, title: "Slides — A/B Testing na prática", type: "slides", discipline: "S06", semester: "2026/1", date: "2026-03-22", pages: 35, tags: ["a/b", "experimentos"] },
-  ],
+  materials: [],
 
   // ---------------------------------------------------------------------------
   // PUBLICATIONS — peer-reviewed papers
