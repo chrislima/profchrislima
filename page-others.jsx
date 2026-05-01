@@ -138,7 +138,114 @@ function MateriaisPage({ go, initialDiscipline }) {
 }
 
 // ───────── Content Viewer ─────────
+const SVG_SUN = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+const SVG_MOON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+
+const DARK_CSS = [
+  ':root.dark{--ink:#c8cfe8;--ink-2:#8892c8;--paper:#0d1024;--paper-2:#161a2e;',
+  '--accent:#4d7cff;--accent-2:#3d6bee;--accent-soft:#1a2547;',
+  '--line:rgba(200,207,232,.12);--line-strong:rgba(200,207,232,.28);',
+  '--shadow:0 1px 0 rgba(0,0,0,.2),0 10px 30px -12px rgba(0,0,0,.55)}',
+  ':root.dark body{background:#0d1024!important}',
+  ':root.dark .course-chip{background:#161a2e!important;border-color:rgba(200,207,232,.28)!important}',
+  '#__th_btn{width:36px;height:36px;margin-left:auto;flex-shrink:0;',
+  'border-radius:11px;border:1.5px solid var(--line-strong,rgba(11,20,55,.45));',
+  'background:var(--paper-2,#eceef7);color:var(--ink-2,#1b2a6b);',
+  'cursor:pointer;display:flex;align-items:center;justify-content:center;',
+  'transition:border-color .2s,background .2s;}',
+  '#__th_btn:hover{border-color:var(--accent,#1f57ff);background:var(--paper,#f5f6fb)}',
+].join('');
+
+function useIframeEnhance(iframeRef, contentUrl) {
+  useE2(() => {
+    if (!contentUrl) return;
+    const themeKey = contentUrl.replace(/.*\//, '').replace(/\.[^.]+$/, '') + '-t';
+    let attempts = 0;
+    const timer = setInterval(() => {
+      if (++attempts > 200) { clearInterval(timer); return; }
+      try {
+        const idoc = iframeRef.current?.contentDocument;
+        if (!idoc || !idoc.body || idoc.body.children.length === 0) return;
+
+        // Only enhance C14-style apps (identified by .topbar .course-chip)
+        const isC14Style = !!idoc.querySelector('.topbar .course-chip');
+        if (!isC14Style) { clearInterval(timer); return; }
+        if (idoc.getElementById('__th_btn')) { clearInterval(timer); return; }
+        clearInterval(timer);
+
+        const base = iframeRef.current.src.replace(/\/[^/]+$/, '/');
+
+        // ── Replace Inatel wordmark with real logo ──
+        const wordmark = idoc.querySelector('.inatel-wordmark');
+        if (wordmark) {
+          const img = idoc.createElement('img');
+          img.src = base + 'assets/inatel-logo.png';
+          img.alt = 'Inatel';
+          img.style.cssText = 'height:28px;object-fit:contain;filter:brightness(0.85);';
+          wordmark.replaceWith(img);
+        }
+
+        // ── Hide course-chip badge ──────────────────
+        const chip = idoc.querySelector('.course-chip');
+        if (chip) chip.style.display = 'none';
+
+        // ── Replace CDG SVG with real logo, move next to Inatel ──
+        const brand = idoc.querySelector('.brand');
+        const cdgDiv = idoc.querySelector('.cdg');
+        const cdgMark = idoc.querySelector('.cdg-mark');
+        if (cdgMark) {
+          const cdgImg = idoc.createElement('img');
+          cdgImg.src = base + 'assets/cdg-logo.png';
+          cdgImg.alt = 'CDG';
+          cdgImg.style.cssText = 'height:34px;object-fit:contain;';
+          cdgMark.replaceWith(cdgImg);
+          // Move CDG img into brand (next to Inatel), with divider
+          if (brand) {
+            const divider = idoc.createElement('div');
+            divider.style.cssText = 'width:1px;height:24px;background:var(--line,rgba(11,20,55,.18));flex-shrink:0;';
+            brand.appendChild(divider);
+            brand.appendChild(cdgImg);
+          }
+        }
+        if (cdgDiv) cdgDiv.style.display = 'none';
+        const cdgLabel = idoc.querySelector('.cdg-label');
+        if (cdgLabel) cdgLabel.style.display = 'none';
+
+        // ── Remove date / version tags ───────────────
+        idoc.querySelectorAll('.tag.alt, .tag.ghost').forEach(el => el.style.display = 'none');
+
+        // ── Dark mode CSS ────────────────────────────
+        if (!idoc.getElementById('__th_css')) {
+          const s = idoc.createElement('style');
+          s.id = '__th_css';
+          s.textContent = DARK_CSS;
+          idoc.head && idoc.head.appendChild(s);
+        }
+        const isDark = localStorage.getItem(themeKey) === 'dark';
+        if (isDark) idoc.documentElement.classList.add('dark');
+
+        // ── Theme toggle: appended to topbar on the right ──
+        const btn = idoc.createElement('button');
+        btn.id = '__th_btn';
+        btn.title = 'Alternar tema claro/escuro';
+        btn.innerHTML = isDark ? SVG_SUN : SVG_MOON;
+        btn.onclick = () => {
+          const dk = idoc.documentElement.classList.toggle('dark');
+          btn.innerHTML = dk ? SVG_SUN : SVG_MOON;
+          localStorage.setItem(themeKey, dk ? 'dark' : 'light');
+        };
+        const topbar = idoc.querySelector('.topbar');
+        (topbar || idoc.body).appendChild(btn);
+      } catch (_) {}
+    }, 100);
+    return () => clearInterval(timer);
+  }, [contentUrl]);
+}
+
 function ContentViewer({ d }) {
+  const iframeRef = useR2(null);
+  useIframeEnhance(iframeRef, d.contentUrl);
+
   if (!d.contentUrl) {
     return (
       <div style={{
@@ -171,6 +278,7 @@ function ContentViewer({ d }) {
         lineHeight: 0,
       }}>
         <iframe
+          ref={iframeRef}
           src={d.contentUrl}
           style={{ width: '100%', height: 'clamp(520px, 72vh, 860px)', border: 'none', display: 'block' }}
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads"
@@ -209,9 +317,39 @@ function DisciplinaPage({ go, slug }) {
     <>
       <section className="disc-hero">
         <div className="container">
-          <button className="kicker" onClick={() => go('home')} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', padding: 0, marginBottom: 32, cursor: 'default' }}>
-            {t.discipline.back}
-          </button>
+          {/* Discipline switcher nav */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 32, flexWrap: 'wrap' }}>
+            <button
+              onClick={() => go('home')}
+              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', padding: '5px 0', marginRight: 4, cursor: 'pointer', fontSize: 12, fontFamily: 'JetBrains Mono, ui-monospace, monospace', letterSpacing: '0.05em', display: 'inline-flex', alignItems: 'center', gap: 5, flexShrink: 0, transition: 'color 0.2s' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--text)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}>
+              ← INÍCIO
+            </button>
+            <span style={{ width: 1, height: 14, background: 'var(--border-strong)', flexShrink: 0 }}/>
+            {D.disciplines.map(disc => (
+              <button
+                key={disc.slug}
+                onClick={() => go('disciplina', disc.slug)}
+                style={{
+                  padding: '5px 11px',
+                  borderRadius: 7,
+                  border: '1px solid ' + (disc.slug === d.slug ? 'var(--accent)' : 'var(--border)'),
+                  background: disc.slug === d.slug ? 'var(--accent-soft)' : 'transparent',
+                  color: disc.slug === d.slug ? 'var(--accent)' : 'var(--text-muted)',
+                  fontSize: 11.5,
+                  fontFamily: 'JetBrains Mono, ui-monospace, monospace',
+                  letterSpacing: '0.05em',
+                  cursor: 'pointer',
+                  transition: 'all 0.18s',
+                  fontWeight: disc.slug === d.slug ? 600 : 400,
+                }}
+                onMouseEnter={e => { if (disc.slug !== d.slug) { e.currentTarget.style.borderColor = 'var(--border-strong)'; e.currentTarget.style.color = 'var(--text-dim)'; } }}
+                onMouseLeave={e => { if (disc.slug !== d.slug) { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-muted)'; } }}>
+                {disc.code}
+              </button>
+            ))}
+          </div>
           <div className="disc-hero-code">{d.code}</div>
           <h1 className="disc-hero-title">{d.name}</h1>
           <p className="disc-hero-lede">{d.description}</p>

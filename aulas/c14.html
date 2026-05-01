@@ -132,7 +132,50 @@ document.addEventListener('DOMContentLoaded', async function() {
     const headOpen = template.match(/<head[^>]*>/i);
     if (headOpen) {
       const i = headOpen.index + headOpen[0].length;
-      template = template.slice(0, i) + resourceScript + template.slice(i);
+      const themeCSS = '<style id="__th_css">' +
+        ':root.dark{' +
+          '--ink:#c8cfe8;--ink-2:#8892c8;' +
+          '--paper:#0d1024;--paper-2:#161a2e;' +
+          '--accent:#4d7cff;--accent-2:#3d6bee;--accent-soft:#1a2547;' +
+          '--line:rgba(200,207,232,0.12);--line-strong:rgba(200,207,232,0.28);' +
+          '--shadow:0 1px 0 rgba(0,0,0,.2),0 10px 30px -12px rgba(0,0,0,.55)' +
+        '}' +
+        ':root.dark body{background:#0d1024!important}' +
+        ':root.dark .course-chip{background:var(--paper-2)!important;border-color:var(--line-strong)!important}' +
+        '#__th_btn{' +
+          'position:fixed;top:10px;right:10px;z-index:9998;' +
+          'width:34px;height:34px;border-radius:50%;' +
+          'border:1.5px solid var(--line-strong);' +
+          'background:var(--paper-2);color:var(--ink);' +
+          'cursor:pointer;font-size:16px;' +
+          'display:flex;align-items:center;justify-content:center;' +
+          'transition:border-color .18s,transform .18s;' +
+          'box-shadow:0 2px 8px rgba(0,0,0,.18)' +
+        '}' +
+        '#__th_btn:hover{border-color:var(--accent);transform:scale(1.08)}' +
+        '</style>';
+      const themeJS = '(function(){' +
+        'var d=document.documentElement;' +
+        'if(localStorage.getItem("c14t")==="dark")d.classList.add("dark");' +
+        'function mk(){' +
+          'if(document.getElementById("__th_btn"))return;' +
+          'var b=document.createElement("button");' +
+          'b.id="__th_btn";' +
+          'b.title="Alternar tema claro/escuro";' +
+          'b.textContent=d.classList.contains("dark")?"\\u2600":"\\uD83C\\uDF19";' +
+          'b.onclick=function(){' +
+            'var dk=d.classList.toggle("dark");' +
+            'b.textContent=dk?"\\u2600":"\\uD83C\\uDF19";' +
+            'localStorage.setItem("c14t",dk?"dark":"light");' +
+          '};' +
+          'if(document.body)document.body.appendChild(b);' +
+        '}' +
+        'document.readyState==="loading"' +
+          '?document.addEventListener("DOMContentLoaded",function(){setTimeout(mk,80);})' +
+          ':setTimeout(mk,80);' +
+        '})();';
+      const themeInject = themeCSS + '<script>' + themeJS + '</' + 'script>';
+      template = template.slice(0, i) + resourceScript + themeInject + template.slice(i);
     }
 
     // Parse the template and swap the root element. Scripts inserted via
@@ -164,6 +207,47 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (window.Babel && typeof window.Babel.transformScriptTags === 'function') {
       window.Babel.transformScriptTags();
     }
+
+    // ─── Theme toggle — injected directly after document replacement ───
+    (function() {
+      var styleEl = document.createElement('style');
+      styleEl.id = '__th_css';
+      styleEl.textContent =
+        ':root.dark{--ink:#c8cfe8;--ink-2:#8892c8;--paper:#0d1024;--paper-2:#161a2e;' +
+        '--accent:#4d7cff;--accent-2:#3d6bee;--accent-soft:#1a2547;' +
+        '--line:rgba(200,207,232,.12);--line-strong:rgba(200,207,232,.28);' +
+        '--shadow:0 1px 0 rgba(0,0,0,.2),0 10px 30px -12px rgba(0,0,0,.55)}' +
+        ':root.dark body{background:#0d1024!important}' +
+        ':root.dark .course-chip{background:#161a2e!important;border-color:rgba(200,207,232,.28)!important}' +
+        '#__th_btn{position:fixed;top:10px;right:10px;z-index:9998;width:34px;height:34px;' +
+        'border-radius:50%;border:1.5px solid var(--line-strong,rgba(11,20,55,.45));' +
+        'background:var(--paper-2,#eceef7);cursor:pointer;font-size:16px;' +
+        'display:flex;align-items:center;justify-content:center;' +
+        'transition:border-color .18s,transform .18s;box-shadow:0 2px 8px rgba(0,0,0,.18)}' +
+        '#__th_btn:hover{border-color:var(--accent,#1f57ff);transform:scale(1.08)}';
+      document.head && document.head.appendChild(styleEl);
+
+      if (localStorage.getItem('c14t') === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+
+      var timer = setInterval(function() {
+        if (!document.body || document.body.children.length === 0) return;
+        if (document.getElementById('__th_btn')) { clearInterval(timer); return; }
+        clearInterval(timer);
+        var btn = document.createElement('button');
+        btn.id = '__th_btn';
+        btn.title = 'Alternar tema claro/escuro';
+        btn.textContent = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+        btn.onclick = function() {
+          var dk = document.documentElement.classList.toggle('dark');
+          btn.textContent = dk ? '☀️' : '🌙';
+          localStorage.setItem('c14t', dk ? 'dark' : 'light');
+        };
+        document.body.appendChild(btn);
+      }, 50);
+    })();
+
   } catch (err) {
     setStatus('Error unpacking: ' + err.message);
     console.error('Bundle unpack error:', err);

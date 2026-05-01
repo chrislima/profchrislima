@@ -59,7 +59,7 @@ window.SITE_DATA = {
       description: "Fundamentos de POO em Java e Python: classes, herança, polimorfismo, encapsulamento. Princípios SOLID aplicados a problemas reais. Padrões de projeto introdutórios.",
       color: "#3B82F6",
       folderUrl: "https://1drv.ms/f/c/b5ea056ce2397b48/IgBIeznibAXqIIC1tKMAAAAAAe0JnT9YwxxufnMtEXYgPMA?e=dQhYrn",
-      contentUrl: null,
+      contentUrl: "./aulas/POO Interativo.html",
       repos: [
         { label: "C206_C125", url: "https://github.com/chrislima-inatel/C206_C125" },
       ],
