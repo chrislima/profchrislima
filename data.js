@@ -71,7 +71,7 @@ window.SITE_DATA = {
       description: "Processos de desenvolvimento, requisitos, modelagem UML, métricas de software e gestão de projetos ágeis. Trabalho em equipe com práticas de versionamento.",
       color: "#3B82F6",
       folderUrl: "https://1drv.ms/f/c/b5ea056ce2397b48/IgBIeznibAXqIIC1RaIAAAAAAUADkhDnZVQH3FWWh3bZWnE?e=WOOCRw",
-      contentUrl: "https://1drv.ms/u/c/b5ea056ce2397b48/IQCHi1tkC2hjQqr9IBtFh5p5AXuSpSKjY8sGIt4UxBeirdo?e=2sQx4E",
+      contentUrl: "./aulas/c14.html",
       repos: [
         { label: "C214", url: "https://github.com/chrislima-inatel/C214" },
         { label: "tdd-ci-devops", url: "https://github.com/chrislima-inatel/tdd-ci-devops" },
